@@ -139,7 +139,7 @@
                             {
                                 if (dangerousAA(attacker) && SpellManager.E.IsReady())
                                 {
-                                    SpellManager.W.Cast();
+                                    W.Cast();
                                 }
                             }
 
@@ -184,7 +184,7 @@
                                             //dangerous targeted spell, not covered by Evade
                                             if (args.Target != null)
                                             {
-                                                SpellManager.W.Cast();
+                                                W.Cast();
                                             }
                                         }
                                     }
