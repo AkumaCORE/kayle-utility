@@ -125,14 +125,14 @@
         {
             if (W.IsReady() && QssMenu["Quicksilver"].Cast<CheckBox>().CurrentValue)
             {
-                W.Cast();
+                W.Cast(Player);
                  
                 
             }
 
             if (W.IsReady() && QssMenu["Mercurial"].Cast<CheckBox>().CurrentValue)
             {
-                W.Cast();
+                W.Cast(Player);
                 
             }
 
