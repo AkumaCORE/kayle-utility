@@ -10,6 +10,10 @@
     internal class AutoQSS
     {
         public static Spell.Active Cleanse;
+        
+        public static Spell.Targeted W;
+        
+        public static Spell.Targeted R;
 
         protected static readonly Item Mercurial_Scimitar = new Item(ItemId.Mercurial_Scimitar);
 
@@ -119,14 +123,17 @@
 
         public static void QssCast()
         {
-            if (Quicksilver_Sash.IsOwned() && Quicksilver_Sash.IsReady() && QssMenu["Quicksilver"].Cast<CheckBox>().CurrentValue)
+            if (W.IsReady() && QssMenu["Quicksilver"].Cast<CheckBox>().CurrentValue)
             {
-                Quicksilver_Sash.Cast();
+                W.Cast();
+                 
+                
             }
 
-            if (Mercurial_Scimitar.IsOwned() && Mercurial_Scimitar.IsReady() && QssMenu["Mercurial"].Cast<CheckBox>().CurrentValue)
+            if (W.IsReady() && QssMenu["Mercurial"].Cast<CheckBox>().CurrentValue)
             {
-                Mercurial_Scimitar.Cast();
+                W.Cast();
+                
             }
 
             if (Cleanse != null)
