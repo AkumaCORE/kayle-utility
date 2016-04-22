@@ -120,6 +120,320 @@
                 }
             }
         }
+        private static void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        {
+            if (sender.IsEnemy || sender.IsMonster)
+            {
+                if ((sender.IsMinion || sender.IsMonster || args.SData.IsAutoAttack()) && args.Target != null)
+                {
+                    for (int i = 0; i < EntityManager.Heroes.Allies.Count; i++)
+                    {
+                        if (args.Target.NetworkId == EntityManager.Heroes.Allies[i].NetworkId)
+                        {
+                            IncDamage[i][EntityManager.Heroes.Allies[i].ServerPosition.Distance(sender.ServerPosition) / args.SData.MissileSpeed + Game.Time] = sender.GetAutoAttackDamage(EntityManager.Heroes.Allies[i]);
+                        }
+                        if (i == me && sender is AIHeroClient)
+                        {
+                            var attacker = sender as AIHeroClient;
+                            if (attacker != null)
+                            {
+                                if (dangerousAA(attacker) && SpellManager.E.IsReady())
+                                {
+                                    SpellManager.W.Cast();
+                                }
+                            }
+
+                        }
+                    }
+                }
+                else if (!(sender is AIHeroClient))
+                {
+                    return;
+                }
+                else
+                {
+                    var attacker = sender as AIHeroClient;
+                    if (attacker != null)
+                    {
+                        var slot = attacker.GetSpellSlotFromName(args.SData.Name);
+
+                        if (slot != SpellSlot.Unknown)
+                        {
+                            if (slot == attacker.GetSpellSlotFromName("SummonerDot") && args.Target != null)
+                            {
+                                for (int i = 0; i < EntityManager.Heroes.Allies.Count; i++)
+                                {
+                                    if (args.Target.NetworkId == EntityManager.Heroes.Allies[i].NetworkId)
+                                    {
+                                        InstDamage[i][Game.Time + 2] = attacker.GetSummonerSpellDamage(EntityManager.Heroes.Allies[i], DamageLibrary.SummonerSpells.Ignite);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                for (int i = 0; i < EntityManager.Heroes.Allies.Count; i++)
+                                {
+                                    if ((args.Target != null && args.Target.NetworkId == EntityManager.Heroes.Allies[i].NetworkId) || args.End.Distance(EntityManager.Heroes.Allies[i].ServerPosition) < Math.Pow(args.SData.LineWidth, 2))
+                                    {
+                                        InstDamage[i][Game.Time + 2] = attacker.GetSpellDamage(EntityManager.Heroes.Allies[i], slot);
+                                        
+                                        if (i != me)
+                                            continue;
+                                        if (Settings.useE && (attacker.GetSpellDamage(EntityManager.Heroes.Allies[me], slot) >= Settings.minDamage / 100 * Player.Instance.MaxHealth || dangerousSpell(slot, attacker)))
+                                        {
+                                            //dangerous targeted spell, not covered by Evade
+                                            if (args.Target != null)
+                                            {
+                                                SpellManager.W.Cast();
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        
+        private static bool dangerousAA(AIHeroClient attacker)
+        {
+            if (attacker.ChampionName == "Leona" && attacker.HasBuff("LeonaShieldOfDaybreak"))
+            {
+                return true;
+            }
+            if (attacker.ChampionName == "Udyr" && attacker.HasBuff("UdyrBearStance"))
+            {
+                return true;
+            }
+            if (attacker.ChampionName == "Nautilus" && attacker.HasBuff("NautilusStaggeringBlow"))
+            {
+                return true;
+            }
+            if (attacker.ChampionName == "Renekton" && attacker.HasBuff("RenektonRuthlessPredator"))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private static bool dangerousSpell(SpellSlot slot, AIHeroClient sender)
+        {
+            if (sender.ChampionName == "Ahri" && slot == SpellSlot.E)
+            {
+                return true;
+            } 
+            if (sender.ChampionName == "Aatrox" && slot == SpellSlot.Q)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Alistar" && slot == SpellSlot.Q)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Annie" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Ashe" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Blitzcrank" && slot == SpellSlot.Q)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Braum" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Bard" && slot == SpellSlot.Q)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Amumu" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Amumu" && slot == SpellSlot.Q)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Caitlyn" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Cassiopeia" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Chogath" && slot == SpellSlot.Q)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Chogath" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Darius" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Diana" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Draven" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Ekko" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Elise" && slot == SpellSlot.E)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Ezreal" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Fiora" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Fizz" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Galio" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Gnar" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Gragas" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Graves" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Hecarim" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Jinx" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Karthus" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Kennen" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Leona" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Leona" && slot == SpellSlot.Q)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Leona" && slot == SpellSlot.E)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Malphite" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Morgana" && slot == SpellSlot.Q)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Nami" && slot == SpellSlot.Q)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Nami" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Nautilus" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Nautilus" && slot == SpellSlot.Q)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Orianna" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Sejuani" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Shen" && slot == SpellSlot.E)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Shyvana" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Skarner" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Sona" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Syndra" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Thresh" && slot == SpellSlot.Q)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Taric" && slot == SpellSlot.E)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Veigar" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Vi" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Zed" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Ziggs" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            if (sender.ChampionName == "Zyra" && slot == SpellSlot.R)
+            {
+                return true;
+            }
+            return false;
+        }
 
         public static void QssCast()
         {
