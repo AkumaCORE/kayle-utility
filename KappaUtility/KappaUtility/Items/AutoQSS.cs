@@ -120,7 +120,31 @@
                 }
             }
         }
-        private static void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+
+        public static void QssCast()
+        {
+            if (W.IsReady() && QssMenu["Quicksilver"].Cast<CheckBox>().CurrentValue)
+            {
+                W.Cast(Player.Instance);
+                 
+                
+            }
+
+            if (W.IsReady() && QssMenu["Mercurial"].Cast<CheckBox>().CurrentValue)
+            {
+                W.Cast(Player.Instance);
+                
+            }
+
+            if (Cleanse != null)
+            {
+                if (QssMenu["Cleanse"].Cast<CheckBox>().CurrentValue && Cleanse.IsReady())
+                {
+                    Cleanse.Cast();
+                }
+            }
+        }
+                private static void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
             if (sender.IsEnemy || sender.IsMonster)
             {
@@ -139,7 +163,7 @@
                             {
                                 if (dangerousAA(attacker) && SpellManager.E.IsReady())
                                 {
-                                    W.Cast();
+                                    W.Cast(Player.Instance);
                                 }
                             }
 
@@ -184,7 +208,7 @@
                                             //dangerous targeted spell, not covered by Evade
                                             if (args.Target != null)
                                             {
-                                                W.Cast();
+                                                W.Cast(Player.Instance);
                                             }
                                         }
                                     }
@@ -435,28 +459,5 @@
             return false;
         }
 
-        public static void QssCast()
-        {
-            if (W.IsReady() && QssMenu["Quicksilver"].Cast<CheckBox>().CurrentValue)
-            {
-                W.Cast(Player.Instance);
-                 
-                
-            }
-
-            if (W.IsReady() && QssMenu["Mercurial"].Cast<CheckBox>().CurrentValue)
-            {
-                W.Cast(Player.Instance);
-                
-            }
-
-            if (Cleanse != null)
-            {
-                if (QssMenu["Cleanse"].Cast<CheckBox>().CurrentValue && Cleanse.IsReady())
-                {
-                    Cleanse.Cast();
-                }
-            }
-        }
     }
 }
